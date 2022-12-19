@@ -7,15 +7,18 @@ import org.example.dto.ReceiptContent;
 import org.example.exception.EntityNotExistsException;
 import org.example.exception.MultipleDiscountCardsException;
 import org.example.mapper.PurchasedProductMapper;
+import org.example.service.PropertyValueExtractor;
 import org.example.service.parser.DiscountCardParser;
 import org.example.service.parser.ProductIdQuantityPairParser;
 import org.example.service.validator.DiscountCardValidator;
 import org.example.service.validator.ProductIdQuantityPairValidator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConsoleReceiptContentService implements ReceiptContentService<String[]> {
+    public static final String INCORRECT_ARGUMENT_TYPE_MESSAGE_PROPERTY_KEY =  "error.message.incorrect.argument.type";
     public static final String PRODUCT_NOT_EXISTS_MESSAGE = "Product does not exist!";
     public static final String DISCOUNT_CARD_NOT_EXISTS_MESSAGE = "Discount card does not exist!";
     public static final String MULTIPLY_DISCOUNT_CARDS_MESSAGE = "You have already applied the discount card!";
@@ -24,17 +27,20 @@ public class ConsoleReceiptContentService implements ReceiptContentService<Strin
     private final DiscountCardParser discountCardParser;
     private final DiscountCardValidator discountCardValidator;
     private final ProductIdQuantityPairValidator productIdQuantityPairValidator;
+    private final PropertyValueExtractor propertyValueExtractor;
 
     public ConsoleReceiptContentService(PurchasedProductMapper mapper,
                                         ProductIdQuantityPairParser pairParser,
                                         DiscountCardParser discountCardParser,
                                         DiscountCardValidator discountCardValidator,
-                                        ProductIdQuantityPairValidator productIdQuantityPairValidator) {
+                                        ProductIdQuantityPairValidator productIdQuantityPairValidator,
+                                        PropertyValueExtractor propertyValueExtractor) {
         this.mapper = mapper;
         this.pairParser = pairParser;
         this.discountCardParser = discountCardParser;
         this.discountCardValidator = discountCardValidator;
         this.productIdQuantityPairValidator = productIdQuantityPairValidator;
+        this.propertyValueExtractor = propertyValueExtractor;
     }
 
     @Override
@@ -44,6 +50,7 @@ public class ConsoleReceiptContentService implements ReceiptContentService<Strin
         PurchasedProduct purchasedProduct;
         DiscountCard parsedCard;
         for (String argument :  source) {
+            checkIfArgumentFileName(argument);
             purchasedProduct = getPurchasedProductFromArgument(argument);
             addPurchasedProductIfNotNullToPurchasedProducts(purchasedProduct, purchasedProducts);
             parsedCard = getDiscountCardFromArgument(argument);
@@ -97,6 +104,15 @@ public class ConsoleReceiptContentService implements ReceiptContentService<Strin
     private void checkIfCardAlreadySet(DiscountCard discountCard) {
         if (discountCard != null) {
             throw new MultipleDiscountCardsException(MULTIPLY_DISCOUNT_CARDS_MESSAGE);
+        }
+    }
+
+    private void checkIfArgumentFileName(String argument) {
+        File file = new File(argument);
+        if (file.exists()) {
+            throw new IllegalArgumentException(
+                    propertyValueExtractor.getPropertyValue(INCORRECT_ARGUMENT_TYPE_MESSAGE_PROPERTY_KEY)
+            );
         }
     }
 }
