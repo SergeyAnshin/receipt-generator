@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConsoleReceiptContentService implements ReceiptContentService<String[]> {
-    public static final String INCORRECT_ARGUMENT_TYPE_MESSAGE_PROPERTY_KEY =  "error.message.incorrect.argument.type";
-    public static final String PRODUCT_NOT_EXISTS_MESSAGE = "Product does not exist!";
-    public static final String DISCOUNT_CARD_NOT_EXISTS_MESSAGE = "Discount card does not exist!";
-    public static final String MULTIPLY_DISCOUNT_CARDS_MESSAGE = "You have already applied the discount card!";
+    public static final String INCORRECT_ARGUMENT_TYPE_MESSAGE_PROPERTY_KEY =  "error.message.incorrect-argument-type";
+    public static final String PRODUCT_NOT_EXISTS_MESSAGE_PROPERTY_KEY = "error.message.product-not-exists";
+    public static final String DISCOUNT_CARD_NOT_EXISTS_MESSAGE_PROPERTY_KEY = "error.message.discount-card-not-exists";
+    public static final String MULTIPLY_DISCOUNT_CARDS_MESSAGE_PROPERTY_KEY = "error.message.multiply-discount-cards";
     private final PurchasedProductMapper mapper;
     private final ProductIdQuantityPairParser pairParser;
     private final DiscountCardParser discountCardParser;
@@ -75,7 +75,10 @@ public class ConsoleReceiptContentService implements ReceiptContentService<Strin
         if (productIdQuantityPairValidator.isExistingProductId(idQuantityPair.getId())) {
              return mapper.purchasedProductFromIdQuantityPair(idQuantityPair);
         } else {
-            throw new EntityNotExistsException(PRODUCT_NOT_EXISTS_MESSAGE);
+            throw new EntityNotExistsException(
+                    propertyValueExtractor.getPropertyValue(PRODUCT_NOT_EXISTS_MESSAGE_PROPERTY_KEY) + " " +
+                            idQuantityPair.getId()
+            );
         }
     }
 
@@ -97,13 +100,17 @@ public class ConsoleReceiptContentService implements ReceiptContentService<Strin
 
     private void validateParsedDiscountCard(DiscountCard parsedCard) {
         if (!discountCardValidator.isExistingDiscountCard(parsedCard)) {
-            throw new EntityNotExistsException(DISCOUNT_CARD_NOT_EXISTS_MESSAGE);
+            throw new EntityNotExistsException(
+                    propertyValueExtractor.getPropertyValue(DISCOUNT_CARD_NOT_EXISTS_MESSAGE_PROPERTY_KEY)
+            );
         }
     }
 
     private void checkIfCardAlreadySet(DiscountCard discountCard) {
         if (discountCard != null) {
-            throw new MultipleDiscountCardsException(MULTIPLY_DISCOUNT_CARDS_MESSAGE);
+            throw new MultipleDiscountCardsException(
+                    propertyValueExtractor.getPropertyValue(MULTIPLY_DISCOUNT_CARDS_MESSAGE_PROPERTY_KEY)
+            );
         }
     }
 
