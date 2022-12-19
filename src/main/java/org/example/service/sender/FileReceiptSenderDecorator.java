@@ -5,7 +5,6 @@ import org.example.entity.Receipt;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 
 public class FileReceiptSenderDecorator extends ReceiptSenderDecorator {
     private static final String FILE_NAME = "receipts.txt";

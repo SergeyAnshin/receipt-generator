@@ -1,9 +1,7 @@
 package org.example.dao;
 
 import org.example.entity.DiscountCard;
-import org.example.entity.Product;
 
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 
