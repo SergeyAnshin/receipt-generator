@@ -45,9 +45,11 @@ To run the app via gradle you can use the following commands:
 ```bash
 # Arguments from console
 # Argument format: 1-3 2-6 card-55
-./gradlew run --args='<productId-quantity> <productId-quantity> <card-discountCardId>'
+# Example: gradle run --args='2-8 3-3 card-13'
+gradle run --args='<productId>-<quantity> <productId>-<quantity> card-<discountCardId>'
 
 # Arguments from file
 # Argument format: file.txt
-./gradlew run --args='<fileName>'
+# Example: gradle run --args='arguments.txt'
+gradle run --args='<pathToFile>'
 ```
